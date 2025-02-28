@@ -1,0 +1,78 @@
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use App\Models\User;
+use Illuminate\Support\Str;
+
+class AuthController extends Controller
+{
+    public function register(Request $request)
+    {
+        if (empty($request->username) || empty($request->password)) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Pastikan Username dan password harus diisi.',
+                'data' => null
+            ], 500);
+        }
+
+        $existingUser = User::where('username', $request->username)->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Username sudah digunakan.',
+                'data' => null
+            ], 500);
+        }
+
+        $user = User::create([
+            'id' => Str::uuid(),
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'money' => 100,
+            'fame' => 0,
+            'type' => 'GEN',
+            'tier' => 'bronze',
+            'days' => 1,
+        ]);
+
+        if (!$user)
+        {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Gagal registrasi user.',
+                'data' => null
+            ], 500);
+        }
+
+        return response()->json(['code' => 200,'message' => 'Berhasil Registrasi', 'data' => $user]);
+    }
+
+    public function login(Request $request)
+    {
+
+        $user = User::where('username', $request->username)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Username atau password salah.',
+                'data' => null
+            ], 500);
+        }
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        return response()->json(['code' => 200,'message' => 'Login berhasil', 'data' => ['username' => $user->username, 'token' => $token] ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out']);
+    }
+}
