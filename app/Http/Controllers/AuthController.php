@@ -13,20 +13,20 @@ class AuthController extends Controller
     {
         if (empty($request->username) || empty($request->password)) {
             return response()->json([
-                'code' => 500,
+                'code' => 400,
                 'message' => 'Pastikan Username dan password harus diisi.',
                 'data' => null
-            ], 500);
+            ], 400);
         }
 
         $existingUser = User::where('username', $request->username)->first();
 
         if ($existingUser) {
             return response()->json([
-                'code' => 500,
+                'code' => 400,
                 'message' => 'Username sudah digunakan.',
                 'data' => null
-            ], 500);
+            ], 400);
         }
 
         $user = User::create([
@@ -43,10 +43,10 @@ class AuthController extends Controller
         if (!$user)
         {
             return response()->json([
-                'code' => 500,
+                'code' => 422,
                 'message' => 'Gagal registrasi user.',
                 'data' => null
-            ], 500);
+            ], 422);
         }
 
         return response()->json(['code' => 200,'message' => 'Berhasil Registrasi', 'data' => $user]);
@@ -59,10 +59,10 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'code' => 500,
+                'code' => 401,
                 'message' => 'Username atau password salah.',
                 'data' => null
-            ], 500);
+            ], 401);
         }
 
         $token = $user->createToken('authToken')->plainTextToken;
