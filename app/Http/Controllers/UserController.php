@@ -39,16 +39,20 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        $path = storage_path('app/public/pictures/' . $user->picture);
-        if (!file_exists($path)) {
-            return response()->json(['code' => 404, 'data' => null, 'message' => 'File gambar tidak ditemukan'], 404);
+        if (!empty($user->picture) && $user->picture != null) {
+            $path = storage_path('app/public/pictures/' . $user->picture);
+            if (!file_exists($path)) {
+                return response()->json(['code' => 404, 'data' => null, 'message' => 'File gambar tidak ditemukan'], 404);
+            }
+            $file = file_get_contents($path);
+            $type = mime_content_type($path);
+    
+            return response($file, 200)
+                ->header('Content-Type', $type);
         }
+        return response()->json(['code' => 200, 'data' => null, 'message' => 'Belum upload gambar'], 200);
+        
 
-        $file = file_get_contents($path);
-        $type = mime_content_type($path);
-
-        return response($file, 200)
-            ->header('Content-Type', $type);
     }
 
     public function getUserDetail(Request $request)
