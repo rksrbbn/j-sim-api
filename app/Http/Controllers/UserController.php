@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -77,6 +78,29 @@ class UserController extends Controller
             'code' => 200,
             'data' => $params,
             'message' => 'Berhasil Mengupdate Data'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
+
+    public function actionWork(Request $request)
+    {
+        $user = $request->user();
+
+        if (empty($user->id))
+        {
+            return response()->json(['code' => 400, 'data' => null, 'message' => 'Id tidak ditemukan'], 400);
+        }
+
+        $randomPoints = rand(1,10);
+
+        $update = UserModel::find($user->id)->update(['money' => DB::raw('money +'.$randomPoints)]);
+
+         // insert log
+
+        $hasil = [
+            'code' => 200,
+            'data' => null,
+            'message' => 'Berhasil Mendapatkan (' . $randomPoints . ') 48points!'
         ];
         return response()->json($hasil, $hasil['code']);
     }

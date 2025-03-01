@@ -28,5 +28,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/update', [UserController::class, 'updateUser']);
         Route::get('/detail', [UserController::class, 'getUserDetail']);
     });
+    Route::group(['prefix' => 'action'], function () {
+        Route::post('/work', [UserController::class, 'actionWork']);
+        // Route::get('/list', [UserController::class, 'getUser']);
+        // Route::get('/profile', [UserController::class, 'getUserProfile']);
+        // Route::get('/detail', [UserController::class, 'getUserDetail']);
+    });
 });
 
