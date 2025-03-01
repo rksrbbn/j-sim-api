@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogActivitiesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -27,9 +28,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/profile', [UserController::class, 'getUserProfile']);
         Route::post('/update', [UserController::class, 'updateUser']);
         Route::get('/detail', [UserController::class, 'getUserDetail']);
+        Route::get('/logs', [LogActivitiesController::class, 'getUserLogs']);
     });
     Route::group(['prefix' => 'action'], function () {
         Route::post('/work', [UserController::class, 'actionWork']);
+        // Route::get('/list', [UserController::class, 'getUser']);
+        // Route::get('/profile', [UserController::class, 'getUserProfile']);
+        // Route::get('/detail', [UserController::class, 'getUserDetail']);
+    });
+    Route::group(['prefix' => 'logs'], function () {
+        Route::post('/save', [LogActivitiesController::class, 'saveLog']);
         // Route::get('/list', [UserController::class, 'getUser']);
         // Route::get('/profile', [UserController::class, 'getUserProfile']);
         // Route::get('/detail', [UserController::class, 'getUserDetail']);

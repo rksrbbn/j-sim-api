@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivitiesModel;
 use App\Models\UserModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -93,9 +96,26 @@ class UserController extends Controller
 
         $randomPoints = rand(1,10);
 
-        $update = UserModel::find($user->id)->update(['money' => DB::raw('money +'.$randomPoints)]);
+        $update = UserModel::find($user->id)->update(['money' => DB::raw('money +'.$randomPoints), 'days' => DB::raw('days +1')]);
 
          // insert log
+        $params = [
+            'id' => Str::uuid(),
+            'user_id' => $user->id,
+            'activity' => 'Kamu Bekerja di Tempat Kerja, Mendapatkan (' . $randomPoints . ') 48points!',
+            'time' => Carbon::now('Asia/Jakarta')
+        ];
+
+        $create =LogActivitiesModel::create($params);
+
+        if (!$create)
+        {
+            return response()->json( [
+                'code' => 422,
+                'data' => null,
+                'message' => 'Gagal Menyimpan Data Log'
+            ], 422);
+        }
 
         $hasil = [
             'code' => 200,
