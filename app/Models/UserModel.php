@@ -14,4 +14,5 @@ class UserModel extends Model
     protected $primaryKey = 'id'; // Pastikan Laravel tahu primary key-nya
     public $incrementing = false; // Matikan auto-increment
     protected $keyType = 'string'; // Karena UUID berupa string
+    protected $hidden = ['password'];
 }
