@@ -70,7 +70,6 @@ class UserController extends Controller
 
     public function updateUser(Request $request)
     {
-        
         $user = $request->user();
 
         $params = [
@@ -113,21 +112,17 @@ class UserController extends Controller
                 ], 400);
             }
 
+            $oldPicturePath = storage_path('app/public/pictures/' . $user->picture);
+            if (file_exists($oldPicturePath)) {
+                unlink($oldPicturePath);
+            }
+
             $picture->storeAs('public/pictures', $picture_name);
 
             $params['picture'] = $picture_name;
         }
 
         $update = UserModel::where('id', $user->id)->update($params);
-
-        // if (!$update)
-        // {
-        //     return response()->json( [
-        //         'code' => 422,
-        //         'data' => null,
-        //         'message' => 'Gagal Mengupdate Data'
-        //     ], 422);
-        // }
 
         $hasil = [
             'code' => 200,
