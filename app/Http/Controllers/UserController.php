@@ -98,11 +98,26 @@ class UserController extends Controller
 
         $update = UserModel::find($user->id)->update(['money' => DB::raw('money +'.$randomPoints), 'days' => DB::raw('days +1')]);
 
+        $performance = '';
+
+        if ($randomPoints <= 3)
+        {
+            $performance = ' namun performamu kurang baik.';
+        }
+        else if ($randomPoints <= 6)
+        {
+            $performance = ' kamu bekerja dengan cukup baik.';
+        }
+        else
+        {
+            $performance = ' hari ini kamu bekerja dengan sangat baik!';
+        }
+
          // insert log
         $params = [
             'id' => Str::uuid(),
             'user_id' => $user->id,
-            'activity' => 'Kamu Bekerja di Tempat Kerja, Mendapatkan (' . $randomPoints . ') 48points!',
+            'activity' => 'Kamu Bekerja di Tempat Kerja,' . $performance .' Kamu mendapatkan (' . $randomPoints . ') 48points!',
             'time' => Carbon::now('Asia/Jakarta')
         ];
 
