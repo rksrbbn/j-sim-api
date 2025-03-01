@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/profile', [UserController::class, 'getUserProfile']);
         Route::post('/update', [UserController::class, 'updateUser']);
         Route::get('/detail', [UserController::class, 'getUserDetail']);
+        Route::get('/profile-picture', [UserController::class, 'getUserPicture']);
         Route::get('/logs', [LogActivitiesController::class, 'getUserLogs']);
     });
     Route::group(['prefix' => 'action'], function () {

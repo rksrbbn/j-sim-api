@@ -35,6 +35,22 @@ class UserController extends Controller
         return response()->json($hasil, $hasil['code']);
     }
 
+    public function getUserPicture(Request $request)
+    {
+        $user = $request->user();
+
+        $path = storage_path('app/public/pictures/' . $user->picture);
+        if (!file_exists($path)) {
+            return response()->json(['code' => 404, 'data' => null, 'message' => 'File gambar tidak ditemukan'], 404);
+        }
+
+        $file = file_get_contents($path);
+        $type = mime_content_type($path);
+
+        return response($file, 200)
+            ->header('Content-Type', $type);
+    }
+
     public function getUserDetail(Request $request)
     {
         
@@ -58,13 +74,49 @@ class UserController extends Controller
         $user = $request->user();
 
         $params = [
-            'username' => $request->username,
-            'money' => $request->money,
-            'fame' => $request->fame,
-            'type' => $request->type,
-            'tier' => $request->tier,
-            'days' => $request->days,
+            'bio' => $request->bio,
+            'oshimen' => $request->oshimen,
+            'fav_songs' => $request->songs,
         ];
+
+        if ($request->hasFile('picture')) 
+        {
+            $picture = $request->file('picture');
+
+            if (!$picture->isValid()) 
+            {
+                return response()->json( [
+                    'code' => 400,
+                    'data' => null,
+                    'message' => 'Gagal Mengupdate Data, File Gambar Tidak Valid'
+                ], 400);
+            }
+
+            $extension = $picture->getClientOriginalExtension();
+            $picture_name = $picture->getClientOriginalName();
+
+            if (!in_array(strtolower((string)$extension), ['jpg', 'jpeg', 'png'])) 
+            {
+                return response()->json( [
+                    'code' => 400,
+                    'data' => null,
+                    'message' => 'Gagal Mengupdate Data, File Gambar Harus Berformat JPG, JPEG, PNG'
+                ], 400);
+            }
+
+            if ($picture->getSize() > 100000) 
+            {
+                return response()->json( [
+                    'code' => 400,
+                    'data' => null,
+                    'message' => 'Gagal Mengupdate Data, File Gambar Maksimal 100KB'
+                ], 400);
+            }
+
+            $picture->storeAs('public/pictures', $picture_name);
+
+            $params['picture'] = $picture_name;
+        }
 
         $update = UserModel::where('id', $user->id)->update($params);
 
