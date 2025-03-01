@@ -116,9 +116,11 @@ class UserController extends Controller
                 ], 400);
             }
 
-            $oldPicturePath = storage_path('app/public/pictures/' . $user->picture);
-            if (file_exists($oldPicturePath)) {
-                unlink($oldPicturePath);
+            if (!empty($user->picture) && $user->picture != null) {
+                $oldPicturePath = storage_path('app/public/pictures/' . $user->picture);
+                if (file_exists($oldPicturePath)) {
+                    unlink($oldPicturePath);
+                }
             }
 
             $picture->storeAs('public/pictures', $picture_name);
