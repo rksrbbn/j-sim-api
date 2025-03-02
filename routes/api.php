@@ -19,9 +19,9 @@ use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
 // Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('/list', [UserController::class, 'getUser']);
