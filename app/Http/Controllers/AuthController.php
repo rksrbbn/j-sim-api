@@ -19,6 +19,15 @@ class AuthController extends Controller
             ], 400);
         }
 
+        // JIKA IP SUDAH TERDAFTAR
+        if (User::where('ip', $request->ip())->exists()) {
+            return response()->json([
+                'code' => 400,
+                'message' => 'Satu device hanya boleh memiliki satu akun yang terdaftar.',
+                'data' => null
+            ], 400);
+        }
+
         $existingUser = User::where('username', $request->username)->first();
 
         if ($existingUser) {
@@ -38,6 +47,8 @@ class AuthController extends Controller
             'type' => 'GEN',
             'tier' => 'bronze',
             'days' => 1,
+            'is_dev' => 0,
+            'ip' => $request->ip()
         ]);
 
         if (!$user)
