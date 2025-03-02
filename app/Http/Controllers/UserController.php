@@ -72,7 +72,7 @@ class UserController extends Controller
     {
         $userPicture = $request->name;
 
-        if (!empty($userPicture) && $userPicture != null) {
+        if (!empty($userPicture) && $userPicture != null && $userPicture != 'null') {
             $path = storage_path('app/public/pictures/' . $userPicture);
             if (!file_exists($path)) {
                 return response()->json(['code' => 404, 'data' => null, 'message' => 'File gambar tidak ditemukan'], 404);
@@ -83,6 +83,7 @@ class UserController extends Controller
             return response($file, 200)
                 ->header('Content-Type', $type);
         }
+
         return response()->json(['code' => 200, 'data' => null, 'message' => 'Belum upload gambar'], 200);
     }
 
