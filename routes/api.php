@@ -27,6 +27,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::group(['prefix' => 'items'], function () {
             Route::get('/list', [UserItemsController::class, 'getUserItems']);
+            Route::group(['prefix' => 'store'], function () {
+                Route::get('/list', [UserItemsController::class, 'getStoreItems']); // untuk list item di online store
+                // Route::get('/mine', [UserItemsController::class, 'getStoreItems']); // untuk list item di store pribadi
+            });
         });
         Route::get('/list', [UserController::class, 'getUser']);
         Route::get('/profile', [UserController::class, 'getUserProfile']);

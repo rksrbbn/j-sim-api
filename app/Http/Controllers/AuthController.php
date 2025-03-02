@@ -21,13 +21,13 @@ class AuthController extends Controller
         }
 
         // JIKA IP SUDAH TERDAFTAR
-        if (User::where('ip', $request->ip())->exists()) {
-            return response()->json([
-                'code' => 400,
-                'message' => 'IP ini sudah memiliki akun yang terdaftar.',
-                'data' => null
-            ], 400);
-        }
+        // if (User::where('ip', $request->ip())->exists()) {
+        //     return response()->json([
+        //         'code' => 400,
+        //         'message' => 'IP ini sudah memiliki akun yang terdaftar.',
+        //         'data' => null
+        //     ], 400);
+        // }
 
         $existingUser = User::where('username', $request->username)->first();
 

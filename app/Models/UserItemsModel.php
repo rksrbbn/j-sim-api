@@ -17,4 +17,8 @@ class UserItemsModel extends Model
     {
         return $this->hasOne(ItemsModel::class, 'id', 'item_id');
     }
+    public function dataUser()
+    {
+        return $this->hasOne(UserModel::class, 'id', 'user_id')->select('id', 'username');
+    }
 }

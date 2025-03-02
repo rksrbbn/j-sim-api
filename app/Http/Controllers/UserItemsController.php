@@ -33,4 +33,30 @@ class UserItemsController extends Controller
         ];
         return response()->json($hasil, $hasil['code']);
     }
+
+    public function getStoreItems(Request $request)
+    {
+        $user = $request->user();
+        $search = $request->search;
+        $limit = $request->limit ?? 10;
+        $offset = $request->offset ?? 0;
+
+        $items = UserItemsModel::where('user_id', '!=', $user->id)->where('for_sale', 1);
+
+        if (!empty($search)) {
+            $items->whereHas('dataItems', function ($query) use ($search) {
+                $query->whereRaw("LOWER(name) LIKE ?", ['%' . strtolower($search) . '%']); 
+            });
+        } 
+        
+        $count = $items->count();
+        $items = $items->with(['dataItems', 'dataUser'])->offset($offset)->limit($limit)->get();
+        $hasil = [
+            'code' => 200,
+            'data' => $items,
+            'total' => $count,
+            'message' => 'Berhasil Mendapatkan Data Online Store Items.'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
 }
