@@ -18,21 +18,19 @@ class UserController extends Controller
         $offset = $request->offset ?? 0;
         $limit = $request->limit ?? 10;
 
+        $users = UserModel::where('id', '!=', $user->id);
+
         if (!empty($search)) {
-            $users = UserModel::whereRaw("LOWER(username) LIKE ?", ['%' . strtolower($search) . '%'])->where('id', '!=', $user->id)
-                ->offset($offset)
-                ->limit($limit)
-                ->get();
-        } else {
-            $users = UserModel::where('id', '!=', $user->id)->offset($offset)
-                ->limit($limit)
-                ->get();
-        }
+            $users->whereRaw("LOWER(username) LIKE ?", ['%' . strtolower($search) . '%']);
+        } 
+        
+        $count = $users->count();
+        $users = $users->offset($offset)->limit($limit)->get();
 
         $hasil = [
             'code' => 200,
             'data' => $users,
-            'total' => UserModel::where('id', '!=', $user->id)->count(),
+            'total' => $count,
             'message' => 'Berhasil Mendapatkan Data'
         ];
         return response()->json($hasil, $hasil['code']);
