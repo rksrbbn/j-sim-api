@@ -5,6 +5,7 @@ use App\Http\Controllers\LogActivitiesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,11 +25,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/check-token', [AuthController::class, 'checkToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::group(['prefix' => 'user'], function () {
+        Route::group(['prefix' => 'items'], function () {
+            Route::get('/list', [UserItemsController::class, 'getUserItems']);
+        });
         Route::get('/list', [UserController::class, 'getUser']);
         Route::get('/profile', [UserController::class, 'getUserProfile']);
         Route::post('/update', [UserController::class, 'updateUser']);
         Route::get('/detail', [UserController::class, 'getUserDetail']);
         Route::get('/profile-picture', [UserController::class, 'getUserPicture']);
+        Route::get('/profile-picture-user', [UserController::class, 'getUserPictureByName']);
         Route::get('/logs', [LogActivitiesController::class, 'getUserLogs']);
     });
     Route::group(['prefix' => 'action'], function () {

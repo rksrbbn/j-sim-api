@@ -13,11 +13,26 @@ class UserController extends Controller
 {
     public function getUser(Request $request)
     {
-        $users = UserModel::all();
+        $user = $request->user();
+        $search = $request->search;
+        $offset = $request->offset ?? 0;
+        $limit = $request->limit ?? 10;
+
+        if (!empty($search)) {
+            $users = UserModel::whereRaw("LOWER(username) LIKE ?", ['%' . strtolower($search) . '%'])->where('id', '!=', $user->id)
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+        } else {
+            $users = UserModel::where('id', '!=', $user->id)->offset($offset)
+                ->limit($limit)
+                ->get();
+        }
 
         $hasil = [
             'code' => 200,
             'data' => $users,
+            'total' => UserModel::where('id', '!=', $user->id)->count(),
             'message' => 'Berhasil Mendapatkan Data'
         ];
         return response()->json($hasil, $hasil['code']);
@@ -51,8 +66,24 @@ class UserController extends Controller
                 ->header('Content-Type', $type);
         }
         return response()->json(['code' => 200, 'data' => null, 'message' => 'Belum upload gambar'], 200);
-        
+    }
 
+    public function getUserPictureByName(Request $request)
+    {
+        $userPicture = $request->name;
+
+        if (!empty($userPicture) && $userPicture != null) {
+            $path = storage_path('app/public/pictures/' . $userPicture);
+            if (!file_exists($path)) {
+                return response()->json(['code' => 404, 'data' => null, 'message' => 'File gambar tidak ditemukan'], 404);
+            }
+            $file = file_get_contents($path);
+            $type = mime_content_type($path);
+    
+            return response($file, 200)
+                ->header('Content-Type', $type);
+        }
+        return response()->json(['code' => 200, 'data' => null, 'message' => 'Belum upload gambar'], 200);
     }
 
     public function getUserDetail(Request $request)
@@ -81,6 +112,14 @@ class UserController extends Controller
             'oshimen' => $request->oshimen,
             'fav_songs' => $request->songs,
         ];
+
+        if (strlen($params['bio']) > 150) {
+            return response()->json( [
+                'code' => 400,
+                'data' => null,
+                'message' => 'Gagal Mengupdate Data, Panjang Karakter Bio Melebihi Maksimal (150 karakter).'
+            ], 400);
+        }
 
         if ($request->hasFile('picture')) 
         {
