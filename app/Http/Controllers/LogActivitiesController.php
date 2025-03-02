@@ -14,11 +14,26 @@ class LogActivitiesController extends Controller
     {
         $user = $request->user();
 
-        $logs = LogActivitiesModel::where('user_id', $user->id)->orderBy('time', 'asc')->get();
+        $logs = LogActivitiesModel::where('user_id', $user->id)->orderBy('time', 'asc');
+        $count = $logs->count();
 
+        // hapus logs ketika mencapai 50
+        if ($count > 50)
+        {
+            $delete = $logs->limit($count - 1)->delete();
+            if (!$delete)
+            {
+                return response()->json( [
+                    'code' => 422,
+                    'data' => null,
+                    'message' => 'Gagal Menghapus Data'
+                ], 422);
+            }
+        }
+        $dataLogs = $logs->get();
         $hasil = [
             'code' => 200,
-            'data' => $logs,
+            'data' => $dataLogs,
             'message' => 'Berhasil Mendapatkan Data'
         ];
         return response()->json($hasil, $hasil['code']);
