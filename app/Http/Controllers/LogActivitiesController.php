@@ -17,8 +17,8 @@ class LogActivitiesController extends Controller
         $logs = LogActivitiesModel::where('user_id', $user->id)->orderBy('time', 'asc');
         $count = $logs->count();
 
-        // hapus logs ketika mencapai 50
-        if ($count > 50)
+        // hapus logs ketika mencapai 30
+        if ($count > 30)
         {
             $delete = $logs->limit($count - 1)->delete();
             if (!$delete)

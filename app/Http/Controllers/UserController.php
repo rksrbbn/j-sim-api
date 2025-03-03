@@ -209,7 +209,8 @@ class UserController extends Controller
             'id' => Str::uuid(),
             'user_id' => $user->id,
             'activity' => 'Kamu Bekerja di Tempat Kerja,' . $performance .' Kamu mendapatkan (' . $randomPoints . ') 48points!',
-            'time' => Carbon::now('Asia/Jakarta')
+            'time' => Carbon::now('Asia/Jakarta'),
+            'sim_date' => $request->date
         ];
 
         $create =LogActivitiesModel::create($params);
