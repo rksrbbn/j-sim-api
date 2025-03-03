@@ -29,6 +29,15 @@ class AuthController extends Controller
         //     ], 400);
         // }
 
+        // JIKA DEVICE ID SUDAH TERDAFTAR
+        if (User::where('device_id', $request->deviceId)->exists()) {
+            return response()->json([
+                'code' => 400,
+                'message' => 'Perangkat ini sudah memiliki akun yang terdaftar.',
+                'data' => null
+            ], 400);
+        }
+
         $existingUser = User::where('username', $request->username)->first();
 
         if ($existingUser) {
@@ -49,7 +58,8 @@ class AuthController extends Controller
             'tier' => 'bronze',
             'days' => 1,
             'is_dev' => 0,
-            'ip' => $request->ip()
+            'ip' => $request->ip(),
+            'device_id' => $request->deviceId
         ]);
 
         if (!$user)
