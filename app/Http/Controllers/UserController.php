@@ -39,6 +39,7 @@ class UserController extends Controller
     public function getUserProfile(Request $request)
     {
         $user = $request->user();
+        $user = UserModel::where('id', $user->id)->first()->append('theater_visit');
 
         $hasil = [
             'code' => 200,

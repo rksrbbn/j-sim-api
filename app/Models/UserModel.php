@@ -15,4 +15,9 @@ class UserModel extends Model
     public $incrementing = false; // Matikan auto-increment
     protected $keyType = 'string'; // Karena UUID berupa string
     protected $hidden = ['password', 'ip'];
+
+    public function getTheaterVisitAttribute()
+    {
+        return TheaterVisitModel::where('user_id', $this->id)->where('status', 'VERIFIED')->count();
+    }
 }

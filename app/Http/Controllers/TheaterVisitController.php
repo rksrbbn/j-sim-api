@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivitiesModel;
 use App\Models\TheaterVisitModel;
 use App\Models\UserModel;
 use Carbon\Carbon;
@@ -43,14 +44,33 @@ class TheaterVisitController extends Controller
 
         if ($params['status'] == 'VERIFIED')
         {
-            // kurangi 200 48points
-            $update = UserModel::find($user->id)->update(['money' => DB::raw('money - 200')]);
+            // kurangi 200 48points dan tambah 1 hari
+            $update = UserModel::find($user->id)->update(['money' => DB::raw('money - 200'), 'days' => DB::raw('days + 1')]);
             if (!$update)
             {
                 return response()->json( [
                     'code' => 400,
                     'data' => null,
                     'message' => 'Gagal Menyimpan Data'
+                ], 400);
+            }
+
+            // insert log
+            $paramsLog = [
+                'id' => Str::uuid(),
+                'user_id' => $user->id,
+                'activity' => $request->activity,
+                'time' => Carbon::now('Asia/Jakarta'),
+                'sim_date' => $request->sim_date
+            ];
+
+            $insertLog = LogActivitiesModel::create($paramsLog);
+            if (!$insertLog)
+            {
+                return response()->json( [
+                    'code' => 400,
+                    'data' => null,
+                    'message' => 'Gagal Menyimpan Data Log'
                 ], 400);
             }
         }
