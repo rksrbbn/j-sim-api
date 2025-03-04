@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LogActivitiesController;
+use App\Http\Controllers\TheaterVisitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -39,6 +40,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/profile-picture', [UserController::class, 'getUserPicture']);
         Route::get('/profile-picture-user', [UserController::class, 'getUserPictureByName']);
         Route::get('/logs', [LogActivitiesController::class, 'getUserLogs']);
+        Route::post('/save-theater-apply', [TheaterVisitController::class, 'saveTheaterApply']);
+        Route::get('/check-theater-apply', [TheaterVisitController::class, 'checkTheaterApply']);
     });
     Route::group(['prefix' => 'action'], function () {
         Route::post('/work', [UserController::class, 'actionWork']);
