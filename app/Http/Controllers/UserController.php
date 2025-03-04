@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BondingsModel;
 use App\Models\LogActivitiesModel;
+use App\Models\TwoShotModel;
 use App\Models\UserModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -252,6 +254,100 @@ class UserController extends Controller
             'code' => 200,
             'data' => $update,
             'message' => 'Berhasil Mendapatkan Data'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
+
+    public function save2ShotResult(Request $request)
+    {
+        $user = $request->user();
+
+        $params = [
+            'id' => Str::uuid(),
+            'user_id' => $user->id,
+            'member' => $request->member_name,
+            'type' => $request->type,
+            'day' => $request->day,
+            'show_name' => $request->show_name,
+            'roulette_number' => $request->roulette_number
+        ];
+
+        $insert = TwoShotModel::create($params);
+
+        if (!$insert)
+        {
+            return response()->json( [
+                'code' => 422,
+                'data' => null,
+                'message' => 'Gagal Menyimpan Data'
+            ], 422);
+        }
+
+        $currentDate = $request->date;
+
+        if ($request->type == '2-shot theater')
+        {
+            $currentDate = explode(' ', $request->date);
+            $newDate = (int) $currentDate[0] - 1;
+            $currentDate = $newDate . ' ' . $currentDate[1] . ' ' . $currentDate[2] .  ' ' . $currentDate[3];
+        }
+
+        // insert log
+        $paramsLog = [
+            'id' => Str::uuid(),
+            'user_id' => $user->id,
+            'activity' => 'Kamu melakukan 2 shot pada show ' . $request->show_name . ' dengan nomor roulette ' . $request->roulette_number . '. dan kamu 2 shot bersama ' . $request->member_name . '!',
+            'time' => Carbon::now('Asia/Jakarta'),
+            'sim_date' => $currentDate
+        ];
+
+        $bondings = 10;
+
+        // UPDATE or INSERT BONDINGS
+        // $paramsBondings = [
+        //     'id' => Str::uuid(),
+        //     'user_id' => $user->id,
+        //     'member' => $request->member_name,
+        //     'total' => $bondings,
+        // ];
+
+        $dataBondings = BondingsModel::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'member' => $request->member_name
+            ],
+            [
+                'id' => Str::uuid(),
+                'total' => 0
+            ]
+        );
+
+        $update = $dataBondings->increment('total', $bondings);
+
+        if (!$update)
+        {
+            return response()->json( [
+                'code' => 422,
+                'data' => null,
+                'message' => 'Gagal Menyimpan Data Bondings'
+            ], 422);
+        }
+
+        $create =LogActivitiesModel::create($paramsLog);
+
+        if (!$create)
+        {
+            return response()->json( [
+                'code' => 422,
+                'data' => null,
+                'message' => 'Gagal Menyimpan Data Log'
+            ], 422);
+        }
+
+        $hasil = [
+            'code' => 200,
+            'data' => $params,
+            'message' => 'Berhasil Menyimpan Data'
         ];
         return response()->json($hasil, $hasil['code']);
     }
