@@ -93,7 +93,7 @@ class UserController extends Controller
         {
             return response()->json(['code' => 400, 'data' => null, 'message' => 'Id tidak ditemukan'], 400);
         }
-        $user = UserModel::find($request->id);
+        $user = UserModel::where('id', $request->id)->first()->append('theater_visit');
 
         $hasil = [
             'code' => 200,
@@ -229,6 +229,29 @@ class UserController extends Controller
             'code' => 200,
             'data' => null,
             'message' => 'Berhasil Mendapatkan (' . $randomPoints . ') 48points!'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
+
+    public function deductPoints(Request $request)
+    {
+        $user = $request->user();
+
+        $update = UserModel::where('id', $user->id)->update(['money' => DB::raw('money -'.$request->amount)]);
+
+        if (!$update)
+        {
+            return response()->json( [
+                'code' => 422,
+                'data' => null,
+                'message' => 'Gagal Mengupdate Data'
+            ], 422);
+        }
+
+        $hasil = [
+            'code' => 200,
+            'data' => $update,
+            'message' => 'Berhasil Mendapatkan Data'
         ];
         return response()->json($hasil, $hasil['code']);
     }
