@@ -42,8 +42,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/logs', [LogActivitiesController::class, 'getUserLogs']);
         Route::post('/save-theater-apply', [TheaterVisitController::class, 'saveTheaterApply']);
         Route::get('/check-theater-apply', [TheaterVisitController::class, 'checkTheaterApply']);
+        Route::get('/history-theater-apply', [TheaterVisitController::class, 'historyTheaterApply']);
         Route::post('/deduct-points', [UserController::class, 'deductPoints']);
         Route::post('/save-2shot-result', [UserController::class, 'save2ShotResult']);
+        Route::get('/history-2shot', [UserController::class, 'historyTwoShot']);
     });
     Route::group(['prefix' => 'action'], function () {
         Route::post('/work', [UserController::class, 'actionWork']);

@@ -93,4 +93,29 @@ class TheaterVisitController extends Controller
         return response()->json($hasil, $hasil['code']);
     }
 
+    public function historyTheaterApply(Request $request)
+    {
+        $userId = $request->user_id;
+        $limit = $request->limit ?? 10;
+        $offset = $request->offset ?? 0;
+        
+        $data = TheaterVisitModel::where('user_id', $userId);
+        $count = $data->count();
+
+        $data = $data
+            ->where('status', '<>', 'NOT_APPLIED')
+            ->offset($offset)
+            ->limit($limit)
+            ->orderBy('day', 'desc')
+            ->get();
+
+        $hasil = [
+            'code' => 200,
+            'data' => $data,
+            'total' => $count,
+            'message' => 'Berhasil Mendapatkan Data'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
+
 }

@@ -20,4 +20,9 @@ class UserModel extends Model
     {
         return TheaterVisitModel::where('user_id', $this->id)->where('status', 'VERIFIED')->count();
     }
+
+    public function getTotalTwoShotAttribute()
+    {
+        return TwoShotModel::where('user_id', $this->id)->count();
+    }
 }

@@ -41,7 +41,7 @@ class UserController extends Controller
     public function getUserProfile(Request $request)
     {
         $user = $request->user();
-        $user = UserModel::where('id', $user->id)->first()->append('theater_visit');
+        $user = UserModel::where('id', $user->id)->first()->append(['theater_visit', 'total_two_shot']);
 
         $hasil = [
             'code' => 200,
@@ -95,7 +95,7 @@ class UserController extends Controller
         {
             return response()->json(['code' => 400, 'data' => null, 'message' => 'Id tidak ditemukan'], 400);
         }
-        $user = UserModel::where('id', $request->id)->first()->append('theater_visit');
+        $user = UserModel::where('id', $request->id)->first()->append(['theater_visit', 'total_two_shot']);
 
         $hasil = [
             'code' => 200,
@@ -348,6 +348,30 @@ class UserController extends Controller
             'code' => 200,
             'data' => $params,
             'message' => 'Berhasil Menyimpan Data'
+        ];
+        return response()->json($hasil, $hasil['code']);
+    }
+
+    public function historyTwoShot(Request $request)
+    {
+        $userId = $request->user_id;
+        $limit = $request->limit ?? 10;
+        $offset = $request->offset ?? 0;
+        
+        $data = TwoShotModel::where('user_id', $userId);
+
+        $count = $data->count();
+        $data = $data
+            ->offset($offset)
+            ->limit($limit)
+            ->orderBy('day', 'desc')
+            ->get();
+
+        $hasil = [
+            'code' => 200,
+            'data' => $data,
+            'total' => $count,
+            'message' => 'Berhasil Mendapatkan Data'
         ];
         return response()->json($hasil, $hasil['code']);
     }
