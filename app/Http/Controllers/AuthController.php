@@ -52,7 +52,7 @@ class AuthController extends Controller
             'id' => Str::uuid(),
             'username' => $request->username,
             'password' => Hash::make($request->password),
-            'money' => 100,
+            'money' => 1000,
             'fame' => 0,
             'type' => 'GEN',
             'tier' => 'bronze',

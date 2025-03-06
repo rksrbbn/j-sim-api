@@ -188,19 +188,19 @@ class UserController extends Controller
             return response()->json(['code' => 400, 'data' => null, 'message' => 'Id tidak ditemukan'], 400);
         }
 
-        $randomPoints = rand(1,10);
+        $randomPoints = rand(48,60);
 
         $update = UserModel::find($user->id)->update(['money' => DB::raw('money +'.$randomPoints), 'days' => DB::raw('days +1')]);
 
         $performance = '';
 
-        if ($randomPoints <= 3)
+        if ($randomPoints <= 52)
         {
             $performance = ' namun performamu kurang baik.';
         }
-        else if ($randomPoints <= 6)
+        else if ($randomPoints <= 56)
         {
-            $performance = ' kamu bekerja dengan cukup baik.';
+            $performance = ' kamu melakukan pekerjaanmu dengan cukup baik.';
         }
         else
         {
@@ -211,7 +211,7 @@ class UserController extends Controller
         $params = [
             'id' => Str::uuid(),
             'user_id' => $user->id,
-            'activity' => 'Kamu Bekerja di Tempat Kerja,' . $performance .' Kamu mendapatkan (' . $randomPoints . ') 48points!',
+            'activity' => 'Kamu pergi bekerja,' . $performance .' Kamu mendapatkan (' . $randomPoints . ') 48points!',
             'time' => Carbon::now('Asia/Jakarta'),
             'sim_day' => $request->day
         ];
@@ -262,12 +262,19 @@ class UserController extends Controller
     {
         $user = $request->user();
 
+        $sim_day = $request->day;
+
+        if ($request->type == '2-shot theater')
+        {
+            $sim_day = $sim_day - 1;
+        }
+
         $params = [
             'id' => Str::uuid(),
             'user_id' => $user->id,
             'member' => $request->member_name,
             'type' => $request->type,
-            'day' => $request->day,
+            'day' => $sim_day,
             'show_name' => $request->show_name,
             'roulette_number' => $request->roulette_number
         ];
@@ -289,7 +296,7 @@ class UserController extends Controller
             'user_id' => $user->id,
             'activity' => 'Kamu melakukan 2 shot pada show ' . $request->show_name . ' dengan nomor roulette ' . $request->roulette_number . ' dan kamu 2-shot bersama ' . $request->member_name . '!',
             'time' => Carbon::now('Asia/Jakarta'),
-            'sim_day' => $request->day
+            'sim_day' => $sim_day
         ];
 
         $bondings = 10;
