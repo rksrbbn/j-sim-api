@@ -213,7 +213,7 @@ class UserController extends Controller
             'user_id' => $user->id,
             'activity' => 'Kamu Bekerja di Tempat Kerja,' . $performance .' Kamu mendapatkan (' . $randomPoints . ') 48points!',
             'time' => Carbon::now('Asia/Jakarta'),
-            'sim_date' => $request->date
+            'sim_day' => $request->day
         ];
 
         $create =LogActivitiesModel::create($params);
@@ -283,22 +283,13 @@ class UserController extends Controller
             ], 422);
         }
 
-        $currentDate = $request->date;
-
-        if ($request->type == '2-shot theater')
-        {
-            $currentDate = explode(' ', $request->date);
-            $newDate = (int) $currentDate[0] - 1;
-            $currentDate = $newDate . ' ' . $currentDate[1] . ' ' . $currentDate[2] .  ' ' . $currentDate[3];
-        }
-
         // insert log
         $paramsLog = [
             'id' => Str::uuid(),
             'user_id' => $user->id,
             'activity' => 'Kamu melakukan 2 shot pada show ' . $request->show_name . ' dengan nomor roulette ' . $request->roulette_number . '. dan kamu 2 shot bersama ' . $request->member_name . '!',
             'time' => Carbon::now('Asia/Jakarta'),
-            'sim_date' => $currentDate
+            'sim_day' => $request->day
         ];
 
         $bondings = 10;

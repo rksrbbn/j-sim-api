@@ -61,7 +61,7 @@ class TheaterVisitController extends Controller
                 'user_id' => $user->id,
                 'activity' => $request->activity,
                 'time' => Carbon::now('Asia/Jakarta'),
-                'sim_date' => $request->sim_date
+                'sim_day' => $request->day
             ];
 
             $insertLog = LogActivitiesModel::create($paramsLog);
