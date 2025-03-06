@@ -99,11 +99,11 @@ class TheaterVisitController extends Controller
         $limit = $request->limit ?? 10;
         $offset = $request->offset ?? 0;
         
-        $data = TheaterVisitModel::where('user_id', $userId);
+        $data = TheaterVisitModel::where('user_id', $userId)
+        ->where('status', '<>', 'NOT_APPLIED');
         $count = $data->count();
 
         $data = $data
-            ->where('status', '<>', 'NOT_APPLIED')
             ->offset($offset)
             ->limit($limit)
             ->orderBy('day', 'desc')
