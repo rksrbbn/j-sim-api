@@ -287,7 +287,7 @@ class UserController extends Controller
         $paramsLog = [
             'id' => Str::uuid(),
             'user_id' => $user->id,
-            'activity' => 'Kamu melakukan 2 shot pada show ' . $request->show_name . ' dengan nomor roulette ' . $request->roulette_number . '. dan kamu 2 shot bersama ' . $request->member_name . '!',
+            'activity' => 'Kamu melakukan 2 shot pada show ' . $request->show_name . ' dengan nomor roulette ' . $request->roulette_number . ' dan kamu 2-shot bersama ' . $request->member_name . '!',
             'time' => Carbon::now('Asia/Jakarta'),
             'sim_day' => $request->day
         ];
